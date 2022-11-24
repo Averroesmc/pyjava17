@@ -1,8 +1,15 @@
-FROM openjdk:17.0.1-jdk-slim
+FROM        --platform=$TARGETOS/$TARGETARCH python:3.11-alpine
 
+LABEL       author="ZingyAwesome" maintainer="development@zingyawesome.com"
 
-RUN apt-get update && \
-    apt-get install -y software-properties-common && \
-    apt-get install -y python3-pip
+LABEL       org.opencontainers.image.source="https://github.com/0Zinc/pyjava"
 
-RUN pip install mcdreforged
+RUN         apk add --update --no-cache cmake make ca-certificates curl g++ gcc git openssl sqlite tar tzdata gcompat libffi-dev zlib-dev jpeg-dev openjdk17-jre-headless \
+				&& adduser -D -h /home/container container
+
+USER        container
+ENV         USER=container HOME=/home/container
+WORKDIR     /home/container
+
+COPY        ./../entrypoint.sh /entrypoint.sh
+CMD         [ "/bin/ash", "/entrypoint.sh" ]
